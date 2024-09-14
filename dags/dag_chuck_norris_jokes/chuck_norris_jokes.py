@@ -104,7 +104,7 @@ with DAG(
             if rows_affected:
                 log.info(f"Joke id `{quote_escaped_joke_id}` added")
                 return True
-            log.info(f"Joke id `{quote_escaped_joke_id}` already exists")
+            log.warning(f"Joke id `{quote_escaped_joke_id}` already exists")
             return False
 
         for _ in range(1000):  # Multiple attempts
