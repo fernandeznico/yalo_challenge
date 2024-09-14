@@ -6,8 +6,18 @@
 ```mermaid
 flowchart LR;
     subgraph BigQuery
-        iowa_liquor_sales[[fa:fa-table iowa_liquor_sales]]
+        sales[[iowa_liquor_sales.sales]]
     end
+    subgraph S3:
+        RAW[\RAW/]
+    end
+    subgraph Snowflake:
+        STAGING[[STAGING]]
+        ANALYTICS[[ANALYTICS]]
+    end
+    sales --> RAW
+    RAW --> STAGING
+    STAGING --> ANALYTICS
 ```
 
 ### Data Layers
@@ -17,8 +27,15 @@ flowchart LR;
 ```
 
  * RAW
+   * Ingested data without transformations
  * STAGING
+   * Working zone for transformations like
+     * Cleaning
+     * Standardization
+     * Create new data
  * ANALYTICS
+   * Exposed layer
+   * Business tables
 
 ## Task 3 | Chuck Norris Jokes
 
