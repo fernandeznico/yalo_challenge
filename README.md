@@ -6,7 +6,7 @@
 ```mermaid
 flowchart LR;
     subgraph BigQuery
-        iowa_liquor_sales[[fa:table iowa_liquor_sales]]
+        iowa_liquor_sales[[fa:fa-table iowa_liquor_sales]]
     end
 ```
 
