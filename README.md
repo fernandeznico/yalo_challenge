@@ -3,6 +3,9 @@
 ## Task 1 | Data Lake | Iowa Liquor Retail Sales 
 
 ### Data Lineage
+
+ * Implemented
+
 ```mermaid
 flowchart LR;
     subgraph BigQuery
@@ -15,15 +18,31 @@ flowchart LR;
         STAGING[[STAGING]]
         ANALYTICS[[ANALYTICS]]
     end
-    sales --> RAW
-    RAW --> STAGING
-    STAGING --> ANALYTICS
+    sales --Airflow--> RAW
+    RAW --Snowflake--> STAGING
+    STAGING --Snowflake--> ANALYTICS
+```
+
+ * Recommended Alternative: Use [DataSync](https://docs.aws.amazon.com/datasync/latest/userguide/tutorial_transfer-google-cloud-storage.html)
+
+```mermaid
+flowchart LR;
+    subgraph BigQuery
+        direction TB
+        sales[[iowa_liquor_sales.sales]]
+        Bucket[\Bucket/]
+    end
+    subgraph S3:
+        RAW[\RAW/]
+    end
+    sales --> Bucket
+    Bucket --DataSync-->RAW
 ```
 
 ### Data Layers
 ```mermaid
 flowchart LR;
-    RAW-->STAGING-->ANALYTICS
+    RAW --> STAGING --> ANALYTICS
 ```
 
  * RAW
