@@ -94,7 +94,7 @@ with DAG(
                 return True
             return False
 
-        for _ in range(1):
+        for _ in range(1000):
             joke_id, joke_value = get_a_random_joke()
             quote_escaped_joke_id = joke_id.replace("'", "''")
             if not does_this_id_exists():
@@ -113,6 +113,6 @@ with DAG(
                 log.info(f"Joke value `{quote_escaped_joke_value}` added")
                 return
             log.warning(f"Joke id `{quote_escaped_joke_id}` already exists")
-        raise Exception("After tryings 1000 times, a new joke was not found")
+        raise Exception("After 1000 attempts, a new joke was not found")
 
     load_a_new_joke()
