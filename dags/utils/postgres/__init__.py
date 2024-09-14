@@ -1,3 +1,5 @@
+import os
+
 import psycopg2
 
 from utils.logging import log
@@ -5,11 +7,11 @@ from utils.logging import log
 
 def execute_query(query: str, fetch_one: bool = True, commit: bool = False):
     # Replace with your database credentials
-    host = "recalls_db"
+    host = "localhost" if os.environ.get("ENVIRONMENT") == "LOCAL" else "recalls_db"
     database = "recalls_db"
     user = "admin"
     password = "admin"
-    port = 5432
+    port = 5433 if os.environ.get("ENVIRONMENT") == "LOCAL" else 5432
 
     conn = None
     cur = None
@@ -34,6 +36,8 @@ def execute_query(query: str, fetch_one: bool = True, commit: bool = False):
 
         if commit:
             conn.commit()
+            if fetch_one:
+                return cur.rowcount
 
         if fetch_one:
             return cur.fetchone()

@@ -86,33 +86,33 @@ with DAG(
                 #   ~927 requests per hour
                 raise Exception("API failed")
             d = response.json()
+            log.info(d)
             return d["id"], d["value"]
 
-        def does_this_id_exists():
-            query = f"SELECT 1 FROM yalo.chuck_norris_jokes WHERE id = '{quote_escaped_joke_id}' LIMIT 1"
-            if execute_query(query=query):
+        def insert_if_not_exists() -> bool:
+            rows_affected = execute_query(
+                query=fmt_left(
+                    f"""
+                    INSERT INTO yalo.chuck_norris_jokes(id, value, source)
+                    VALUES ('{quote_escaped_joke_id}', '{quote_escaped_joke_value}', 'AIRFLOW')
+                    ON CONFLICT (id) DO NOTHING
+                    """
+                ),
+                fetch_one=True,
+                commit=True,
+            )
+            if rows_affected:
+                log.info(f"Joke id `{quote_escaped_joke_id}` added")
                 return True
+            log.info(f"Joke id `{quote_escaped_joke_id}` already exists")
             return False
 
-        for _ in range(1000):
+        for _ in range(1000):  # Multiple attempts
             joke_id, joke_value = get_a_random_joke()
             quote_escaped_joke_id = joke_id.replace("'", "''")
-            if not does_this_id_exists():
-                log.info(f"Joke id `{quote_escaped_joke_id}` is new")
-                quote_escaped_joke_value = joke_value.replace("'", "''")
-                execute_query(
-                    query=fmt_left(
-                        f"""
-                        INSERT INTO yalo.chuck_norris_jokes(id, value, source)
-                        VALUES ('{quote_escaped_joke_id}', '{quote_escaped_joke_value}', 'AIRFLOW')
-                        """
-                    ),
-                    fetch_one=False,
-                    commit=True,
-                )
-                log.info(f"Joke value `{quote_escaped_joke_value}` added")
+            quote_escaped_joke_value = joke_value.replace("'", "''")
+            if insert_if_not_exists():
                 return
-            log.warning(f"Joke id `{quote_escaped_joke_id}` already exists")
         raise Exception("After 1000 attempts, a new joke was not found")
 
     load_a_new_joke()
