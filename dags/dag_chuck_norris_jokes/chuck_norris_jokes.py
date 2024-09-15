@@ -1,7 +1,7 @@
 """
 Get a different Chuck Norris Joke every day
 
-# Data Base Configuration
+# Database Configuration
 
     CREATE SCHEMA yalo;
 
